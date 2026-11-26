@@ -58,6 +58,13 @@ namespace ImmunoTrack.Services
             if (_dataAccess.UsernameExists(worker.Username, worker.HealthWorkerID))
                 throw new InvalidOperationException("That username is already taken. Choose another one.");
 
+            // The screen has no Role box, so keep the role the account already has.
+            // (This is what stops an Admin from being turned into Staff.)
+            HealthWorker? existing = _dataAccess.GetById(worker.HealthWorkerID);
+            if (existing == null)
+                throw new InvalidOperationException("That health worker no longer exists.");
+            worker.Role = existing.Role;
+
             _dataAccess.Update(worker);
         }
 
@@ -80,6 +87,10 @@ namespace ImmunoTrack.Services
 
             if (UserSession.CurrentUser != null && UserSession.CurrentUser.HealthWorkerID == healthWorkerId)
                 throw new InvalidOperationException("You cannot delete the account you are currently logged in with.");
+
+            HealthWorker? target = _dataAccess.GetById(healthWorkerId);
+            if (target != null && target.IsAdmin)
+                throw new InvalidOperationException("Administrator accounts cannot be deleted.");
 
             // Business rule: never delete the last account, or nobody could log in.
             if (_dataAccess.GetAll().Count <= 1)

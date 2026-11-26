@@ -255,7 +255,8 @@ namespace ImmunoTrack.Forms
                     Position = w.Position,
                     Contact = w.ContactNumber,
                     License = w.LicenseNo ?? "-",
-                    Username = w.Username
+                    Username = w.Username,
+                    Role = w.Role
                 }).ToList();
 
                 DataGridViewColumn? idColumn = dgvWorkers.Columns["ID"];

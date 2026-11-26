@@ -32,7 +32,8 @@ namespace ImmunoTrack.Forms
             AddMenuButton("Defaulters", () => new DefaultersForm());
             AddMenuButton("Children", () => new ChildrenForm());
             AddMenuButton("Guardians", () => new GuardiansForm());
-            AddMenuButton("Health Workers", () => new HealthWorkersForm());
+            if (UserSession.CurrentUser != null && UserSession.CurrentUser.IsAdmin)
+                AddMenuButton("Health Workers", () => new HealthWorkersForm());
             AddMenuButton("Vaccines and Doses", () => new VaccinesForm());
 
             Load += MainForm_Load;

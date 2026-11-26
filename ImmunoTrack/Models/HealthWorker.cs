@@ -15,19 +15,25 @@ namespace ImmunoTrack.Models
         private string _position = string.Empty;
         private string? _licenseNo;
         private string _username = string.Empty;
+        private string _role = StaffRole;
+
+        public const string AdminRole = "Admin";
+        public const string StaffRole = "Staff";
 
         public HealthWorker()
         {
         }
 
         public HealthWorker(int healthWorkerId, string firstName, string? middleName, string lastName,
-                            string contactNumber, string position, string? licenseNo, string username)
+                            string contactNumber, string position, string? licenseNo, string username,
+                            string role = StaffRole)
             : base(healthWorkerId, firstName, middleName, lastName)
         {
             ContactNumber = contactNumber;
             Position = position;
             LicenseNo = licenseNo;
             Username = username;
+            Role = role;
         }
 
         public int HealthWorkerID
@@ -66,6 +72,20 @@ namespace ImmunoTrack.Models
             }
         }
 
+        // "Admin" or "Staff". Admins cannot be deleted or demoted (see HealthWorkerService).
+        public string Role
+        {
+            get => _role;
+            set
+            {
+                if (value != AdminRole && value != StaffRole)
+                    throw new ArgumentException("Role must be Admin or Staff.");
+                _role = value;
+            }
+        }
+
+        public bool IsAdmin => _role == AdminRole;
+
         public override string GetDisplayInfo()
         {
             return $"{FullName} | {Position}";
@@ -73,7 +93,7 @@ namespace ImmunoTrack.Models
 
         public override string GetRoleName()
         {
-            return "Health Worker";
+            return IsAdmin ? "Administrator" : "Health Worker";
         }
     }
 }

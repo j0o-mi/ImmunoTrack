@@ -22,7 +22,7 @@ namespace ImmunoTrack.DataAccess
     public class HealthWorkerDataAccess
     {
         private const string SelectColumns =
-            "HealthWorkerID, FirstName, MiddleName, LastName, ContactNumber, Position, LicenseNo, Username";
+            "HealthWorkerID, FirstName, MiddleName, LastName, ContactNumber, Position, LicenseNo, Username, Role";
 
         public List<HealthWorker> GetAll()
         {
@@ -71,10 +71,10 @@ namespace ImmunoTrack.DataAccess
         {
             const string sql = @"INSERT INTO HealthWorkers
                                     (FirstName, MiddleName, LastName, ContactNumber, Position, LicenseNo,
-                                     Username, PasswordSalt, PasswordHash)
+                                     Username, PasswordSalt, PasswordHash, Role)
                                  VALUES
                                     (@FirstName, @MiddleName, @LastName, @ContactNumber, @Position, @LicenseNo,
-                                     @Username, @PasswordSalt, @PasswordHash);
+                                     @Username, @PasswordSalt, @PasswordHash, @Role);
                                  SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             using (SqlConnection connection = DatabaseConnection.GetConnection())
@@ -94,7 +94,7 @@ namespace ImmunoTrack.DataAccess
             const string sql = @"UPDATE HealthWorkers
                                  SET FirstName = @FirstName, MiddleName = @MiddleName, LastName = @LastName,
                                      ContactNumber = @ContactNumber, Position = @Position,
-                                     LicenseNo = @LicenseNo, Username = @Username
+                                     LicenseNo = @LicenseNo, Username = @Username, Role = @Role
                                  WHERE HealthWorkerID = @HealthWorkerID";
 
             using (SqlConnection connection = DatabaseConnection.GetConnection())
@@ -198,7 +198,8 @@ namespace ImmunoTrack.DataAccess
                 (string)reader["ContactNumber"],
                 (string)reader["Position"],
                 reader["LicenseNo"] as string,
-                (string)reader["Username"]);
+                (string)reader["Username"],
+                (string)reader["Role"]);
         }
 
         // Shared by Add and Update (everything except the password columns)
@@ -211,6 +212,7 @@ namespace ImmunoTrack.DataAccess
             command.Parameters.AddWithValue("@Position", worker.Position);
             command.Parameters.AddWithValue("@LicenseNo", (object?)worker.LicenseNo ?? DBNull.Value);
             command.Parameters.AddWithValue("@Username", worker.Username);
+            command.Parameters.AddWithValue("@Role", worker.Role);
         }
     }
 }
